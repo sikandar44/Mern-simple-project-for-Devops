@@ -19,11 +19,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      # ===== BACKEND NODE SETUP =====
+      - name: Setup Node (Backend)
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
+          cache-dependency-path: server/package-lock.json
 
       - name: Install backend deps
         working-directory: server
@@ -32,6 +34,14 @@ jobs:
       - name: Lint backend
         working-directory: server
         run: npm run lint -- --max-warnings=0
+
+      # ===== FRONTEND NODE SETUP =====
+      - name: Setup Node (Frontend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
 
       - name: Install frontend deps
         working-directory: client
