@@ -77,13 +77,26 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} "echo 'SSH SUCCESS'"
 
+      # ============ FIXED DEPLOY ============
+
       - name: Deploy Application
         run: |
           ssh ec2-user@${{ secrets.EC2_HOST }} "\
           set -e && \
+
           cd /home/ec2-user/Mern-simple-project-for-Devops && \
+
+          echo '===== CLEAN OLD DOCKER =====' && \
+          docker compose down || true && \
+          docker rm -f backend frontend || true && \
+          docker system prune -af || true && \
+
+          echo '===== UPDATE CODE =====' && \
           git fetch origin && \
           git reset --hard origin/main && \
+
+          echo '===== START NEW BUILD =====' && \
           docker compose up -d --build && \
-          docker image prune -f && \
+
+          echo '===== STATUS =====' && \
           docker compose ps"
